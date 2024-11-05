@@ -1,0 +1,40 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+variables:
+  AWS_DEFAULT_REGION: "us-east-1"
+  DOCKER_DRIVER: overlay2
+  KUBECONFIG: "$CI_PROJECT_DIR/.kube/config"
+
+stages:
+  - build
+  - test
+  - deploy
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - apk add --no-cache curl jq aws-cli
+  - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
+
+build_images:
+  stage: build
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/wordpress:latest -f ./Dockerfile.wordpress .
+    - docker build -t $CI_REGISTRY_IMAGE/mysql:latest -f ./Dockerfile.mysql .
+    - docker push $CI_REGISTRY_IMAGE/wordpress:latest
+    - docker push $CI_REGISTRY_IMAGE/mysql:latest
+
+test_deployment:
+  stage: test
+  script:
+    - kubectl apply -f k8s/wordpress-deployment.yaml
+    - sleep 60
+    - curl -f http://wordpress-service || exit 1
+
+deploy_to_eks:
+  stage: deploy
+  script:
+    - kubectl apply -f k8s/wordpress-deployment.yaml
+    - kubectl apply -f k8s/mysql-deployment.yaml
