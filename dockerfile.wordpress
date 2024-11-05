@@ -1,0 +1,5 @@
+# Use the official WordPress image
+FROM wordpress:latest
+
+# Define volume for wp-content to ensure persistence
+VOLUME /var/www/html/wp-content
