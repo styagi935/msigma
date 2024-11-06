@@ -21,10 +21,13 @@ before_script:
 build_images:
   stage: build
   script:
-    - docker build -t $CI_REGISTRY_IMAGE/wordpress:latest -f ./Dockerfile.wordpress .
-    - docker build -t $CI_REGISTRY_IMAGE/mysql:latest -f ./Dockerfile.mysql .
+    - export IMAGE_TAG=$CI_COMMIT_SHA   # Use commit SHA as the image tag
+    - docker build -t $CI_REGISTRY_IMAGE/wordpress:latest -t $CI_REGISTRY_IMAGE/wordpress:$IMAGE_TAG -f ./Dockerfile.wordpress .
+    - docker build -t $CI_REGISTRY_IMAGE/mysql:latest -t $CI_REGISTRY_IMAGE/mysql:$IMAGE_TAG -f ./Dockerfile.mysql .
     - docker push $CI_REGISTRY_IMAGE/wordpress:latest
+    - docker push $CI_REGISTRY_IMAGE/wordpress:$IMAGE_TAG
     - docker push $CI_REGISTRY_IMAGE/mysql:latest
+    - docker push $CI_REGISTRY_IMAGE/mysql:$IMAGE_TAG
 
 test_deployment:
   stage: test
