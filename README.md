@@ -2,7 +2,7 @@ WordPress Containerization and CI/CD Pipeline
 
 This project provides a containerized setup for deploying a WordPress application with a MySQL database on AWS managed Kubernetes service using gitlab CI/CD pipeline. This setup leverages Docker, GitLab CI/CD , and Amazon EKS for deployment.
 
-Project Overview
+Project Overview -
 
 This project includes:
 - Containerization of WordPress: A Docker container for WordPress with persistent storage for the `/wp-content` directory.
