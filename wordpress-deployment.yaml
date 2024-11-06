@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: wordpress
-        image: $CI_REGISTRY_IMAGE/wordpress:latest
+        image: $CI_REGISTRY_IMAGE/wordpress:$IMAGE_TAG
         ports:
           - containerPort: 80
         env:
