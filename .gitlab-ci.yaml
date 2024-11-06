@@ -10,8 +10,8 @@ variables:
 
 stages:
   - build
-  - test
   - deploy
+  - test
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -29,15 +29,15 @@ build_images:
     - docker push $CI_REGISTRY_IMAGE/mysql:latest
     - docker push $CI_REGISTRY_IMAGE/mysql:$IMAGE_TAG
 
-test_deployment:
-  stage: test
-  script:
-    - kubectl apply -f k8s/wordpress-deployment.yaml
-    - sleep 60
-    - curl -f http://wordpress-service || exit 1
-
 deploy_to_eks:
   stage: deploy
   script:
     - kubectl apply -f k8s/wordpress-deployment.yaml
     - kubectl apply -f k8s/mysql-deployment.yaml
+
+test_deployment:
+  stage: test
+  script:
+    - kubectl rollout status deployment/wordpress --timeout=5m
+    - kubectl rollout status deployment/mysql --timeout=5m
+    - curl -f http://wordpress-service || exit 1
