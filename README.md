@@ -26,6 +26,7 @@ Before starting, ensure the following:
 - A Kubernetes service account with workload identity enabled for runner.
 - A artifact registry from where docker image is getting deployed and pulled.
 - secrets created in k8 cluster for db.(vault could be used for more security).
+- showed PVC file just to ensure your requirement for persistent volume i would be using helm to manage all resources under one umberalla wether it is HPA , PVC aur service.
 
 Setup Instructions
 
